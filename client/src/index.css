@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --font-heading: "Outfit", "Inter", system-ui, -apple-system, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+  
+  --color-brand-bg: #060913;
+  --color-brand-card: rgba(15, 22, 42, 0.65);
+  --color-brand-console: rgba(5, 8, 16, 0.85);
+  --color-brand-primary: hsl(262, 83%, 65%);
+  --color-brand-secondary: hsl(174, 80%, 45%);
+  --color-brand-danger: hsl(340, 85%, 60%);
+  --color-brand-muted: #9ca3af;
+  --color-brand-dim: #6b7280;
+}
+
+/* Custom Utilities for Premium Glassmorphism */
+@utility glass-card {
+  background: rgba(15, 22, 42, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Base Body Styles */
+body {
+  background-color: #060913;
+  color: #f3f4f6;
+  font-family: "Inter", system-ui, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Ambient glow spots */
+.glow-spot {
+  position: absolute;
+  width: 45vw;
+  height: 45vw;
+  border-radius: 50%;
+  filter: blur(140px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.18;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #060913;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
