@@ -1,8 +1,9 @@
 {
-  "name": "client",
+  "name": "zero-wait-opd-client",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "description": "Zero-Wait OPD Kiosk — Frontend",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -10,11 +11,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "axios": "^1.7.9",
     "framer-motion": "^12.40.0",
-    "lenis": "^1.3.23",
     "lucide-react": "^1.16.0",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "react-router-dom": "^7.6.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

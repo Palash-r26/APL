@@ -1,0 +1,419 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-mono,monospace);background:transparent}
+.shell{padding:1.5rem 0}
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
+.toolbar-left{display:flex;gap:8px;flex-wrap:wrap}
+.badge{font-size:11px;padding:3px 10px;border-radius:var(--border-radius-md);font-family:var(--font-sans);font-weight:500;border:0.5px solid}
+.badge-teal{background:#E1F5EE;color:#0F6E56;border-color:#5DCAA5}
+.badge-purple{background:#EEEDFE;color:#3C3489;border-color:#7F77DD}
+.badge-amber{background:#FAEEDA;color:#633806;border-color:#EF9F27}
+.badge-coral{background:#FAECE7;color:#712B13;border-color:#D85A30}
+.badge-blue{background:#E6F1FB;color:#0C447C;border-color:#378ADD}
+.copy-btn{font-family:var(--font-sans);font-size:13px;padding:6px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;display:flex;align-items:center;gap:6px;transition:background 0.15s}
+.copy-btn:hover{background:var(--color-background-secondary)}
+.copy-btn:active{transform:scale(0.98)}
+.prompt-box{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.5rem;position:relative;overflow:hidden}
+.prompt-text{font-family:var(--font-sans);font-size:13px;line-height:1.8;color:var(--color-text-primary);white-space:pre-wrap;word-break:break-word;max-height:520px;overflow-y:auto;padding-right:8px}
+.prompt-text::-webkit-scrollbar{width:4px}
+.prompt-text::-webkit-scrollbar-thumb{background:var(--color-border-secondary);border-radius:4px}
+.section-header{font-weight:500;font-size:12px;color:var(--color-text-secondary);font-family:var(--font-sans);letter-spacing:0.05em;text-transform:uppercase;margin:1.5rem 0 0.5rem;border-top:0.5px solid var(--color-border-tertiary);padding-top:1rem}
+.section-header:first-child{margin-top:0;border-top:none;padding-top:0}
+.section-header-inner{display:flex;align-items:center;gap:6px}
+.kv{display:flex;gap:8px;margin:4px 0}
+.kv-key{color:var(--color-text-secondary);font-size:13px;min-width:120px;flex-shrink:0}
+.kv-val{color:var(--color-text-primary);font-size:13px}
+.endpoint{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 14px;margin:8px 0}
+.endpoint-method{font-size:11px;font-weight:500;padding:2px 8px;border-radius:4px;margin-right:8px;font-family:var(--font-mono)}
+.method-post{background:#FAEEDA;color:#633806}
+.endpoint-path{font-size:13px;color:var(--color-text-primary);font-family:var(--font-mono)}
+.endpoint-desc{font-size:12px;color:var(--color-text-secondary);margin-top:4px;font-family:var(--font-sans)}
+.schema-block{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 14px;margin:8px 0}
+.schema-name{font-size:13px;font-weight:500;color:var(--color-text-primary);font-family:var(--font-mono);margin-bottom:6px}
+.schema-fields{font-size:12px;color:var(--color-text-secondary);font-family:var(--font-sans);line-height:1.8}
+.field-tag{display:inline-block;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:4px;padding:1px 7px;font-size:11px;margin:2px 3px;font-family:var(--font-mono);color:var(--color-text-primary)}
+.file-tree{font-family:var(--font-mono);font-size:12px;color:var(--color-text-secondary);line-height:2;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px 16px;margin:8px 0}
+.file-dir{color:var(--color-text-primary);font-weight:500}
+.file-leaf{color:var(--color-text-secondary)}
+.tok-counter{font-size:11px;color:var(--color-text-tertiary);font-family:var(--font-sans);margin-top:8px;text-align:right}
+.checkmark{color:#0F6E56;font-size:14px}
+</style>
+
+<div class="shell">
+  <h2 class="sr-only">Zero-Wait OPD Kiosk — Full system prompt viewer with copy button</h2>
+
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <span class="badge badge-teal">MERN Stack</span>
+      <span class="badge badge-purple">Gemini AI</span>
+      <span class="badge badge-amber">MongoDB</span>
+      <span class="badge badge-coral">No Firebase</span>
+      <span class="badge badge-blue">Hackathon-Ready</span>
+    </div>
+    <button class="copy-btn" onclick="copyPrompt()" id="copy-btn">
+      <i class="ti ti-copy" aria-hidden="true"></i>
+      <span id="copy-label">Copy full prompt</span>
+    </button>
+  </div>
+
+  <div style="margin-bottom:1rem">
+    <div class="section-header"><div class="section-header-inner"><i class="ti ti-folder-open" aria-hidden="true" style="font-size:15px"></i> File structure to generate</div></div>
+    <div class="file-tree">
+<span class="file-dir">zero-wait-opd/</span>
+├── <span class="file-dir">backend/</span>
+│   ├── <span class="file-leaf">server.js</span>                   <span style="color:var(--color-text-tertiary);font-size:11px">← Express entry point</span>
+│   ├── <span class="file-leaf">.env</span>                        <span style="color:var(--color-text-tertiary);font-size:11px">← MONGODB_URI, GEMINI_API_KEY</span>
+│   ├── <span class="file-dir">config/</span>
+│   │   └── <span class="file-leaf">db.js</span>               <span style="color:var(--color-text-tertiary);font-size:11px">← Mongoose connect</span>
+│   ├── <span class="file-dir">models/</span>
+│   │   ├── <span class="file-leaf">Patient.js</span>          <span style="color:var(--color-text-tertiary);font-size:11px">← Demographics + Insurance</span>
+│   │   └── <span class="file-leaf">QueueTicket.js</span>      <span style="color:var(--color-text-tertiary);font-size:11px">← Token + Priority + Status</span>
+│   ├── <span class="file-dir">routes/</span>
+│   │   ├── <span class="file-leaf">triage.routes.js</span>    <span style="color:var(--color-text-tertiary);font-size:11px">← /extract-id, /analyze-symptoms</span>
+│   │   └── <span class="file-leaf">queue.routes.js</span>     <span style="color:var(--color-text-tertiary);font-size:11px">← /allocate</span>
+│   ├── <span class="file-dir">controllers/</span>
+│   │   ├── <span class="file-leaf">triage.controller.js</span>
+│   │   └── <span class="file-leaf">queue.controller.js</span>
+│   ├── <span class="file-dir">middleware/</span>
+│   │   ├── <span class="file-leaf">upload.js</span>           <span style="color:var(--color-text-tertiary);font-size:11px">← Multer disk storage</span>
+│   │   └── <span class="file-leaf">validate.js</span>         <span style="color:var(--color-text-tertiary);font-size:11px">← express-validator layer</span>
+│   └── <span class="file-dir">utils/</span>
+│       ├── <span class="file-leaf">gemini.js</span>           <span style="color:var(--color-text-tertiary);font-size:11px">← Gemini client wrapper</span>
+│       └── <span class="file-leaf">queueAlgorithm.js</span>   <span style="color:var(--color-text-tertiary);font-size:11px">← Shortest-queue routing</span>
+└── <span class="file-dir">frontend/</span>
+    ├── <span class="file-leaf">package.json</span>
+    ├── <span class="file-leaf">tailwind.config.js</span>
+    └── <span class="file-dir">src/</span>
+        ├── <span class="file-leaf">App.jsx</span>
+        ├── <span class="file-dir">pages/</span>
+        │   ├── <span class="file-leaf">WelcomePage.jsx</span>
+        │   ├── <span class="file-leaf">IDScanPage.jsx</span>
+        │   ├── <span class="file-leaf">SymptomChatPage.jsx</span>
+        │   └── <span class="file-leaf">TicketPage.jsx</span>
+        ├── <span class="file-dir">components/</span>
+        │   ├── <span class="file-leaf">KioskButton.jsx</span>
+        │   ├── <span class="file-leaf">PatientForm.jsx</span>
+        │   ├── <span class="file-leaf">ChatBubble.jsx</span>
+        │   └── <span class="file-leaf">PriorityBadge.jsx</span>
+        ├── <span class="file-dir">hooks/</span>
+        │   └── <span class="file-leaf">useSymptomChat.js</span>
+        └── <span class="file-dir">api/</span>
+            └── <span class="file-leaf">client.js</span>          <span style="color:var(--color-text-tertiary);font-size:11px">← Axios base instance</span>
+    </div>
+  </div>
+
+  <div style="margin-bottom:1rem">
+    <div class="section-header"><div class="section-header-inner"><i class="ti ti-database" aria-hidden="true" style="font-size:15px"></i> Mongoose schemas</div></div>
+    <div class="schema-block">
+      <div class="schema-name">Patient</div>
+      <div class="schema-fields">
+        <span class="field-tag">name: String</span><span class="field-tag">dob: Date</span><span class="field-tag">gender: enum</span><span class="field-tag">uniqueId: String (indexed)</span><span class="field-tag">insurance.provider: String</span><span class="field-tag">insurance.policyId: String</span><span class="field-tag">insurance.status: enum[active,inactive,unknown]</span><span class="field-tag">isPartial: Boolean</span><span class="field-tag">timestamps: true</span>
+      </div>
+    </div>
+    <div class="schema-block">
+      <div class="schema-name">QueueTicket</div>
+      <div class="schema-fields">
+        <span class="field-tag">tokenNumber: String (CARDIO-004)</span><span class="field-tag">department: String</span><span class="field-tag">status: enum[WAITING,IN_CONSULTATION,DONE]</span><span class="field-tag">priorityTier: enum[RED,YELLOW,GREEN]</span><span class="field-tag">assignedDoctor: ObjectId→Doctor</span><span class="field-tag">patientId: ObjectId→Patient</span><span class="field-tag">checkInAt: Date</span><span class="field-tag">estimatedWait: Number</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:1rem">
+    <div class="section-header"><div class="section-header-inner"><i class="ti ti-api" aria-hidden="true" style="font-size:15px"></i> API endpoints</div></div>
+    <div class="endpoint">
+      <span class="endpoint-method method-post">POST</span><span class="endpoint-path">/api/triage/extract-id</span>
+      <div class="endpoint-desc">Accepts multipart image upload via Multer → reads file as base64 → calls Gemini Vision with strict JSON schema → returns parsed patient fields. On OCR failure: returns isPartial:true with whatever fields were confidently parsed, so the frontend pre-fills the editable form.</div>
+    </div>
+    <div class="endpoint">
+      <span class="endpoint-method method-post">POST</span><span class="endpoint-path">/api/triage/analyze-symptoms</span>
+      <div class="endpoint-desc">Accepts { messages: [{role, content}] } conversation log → sends full history to Gemini with system prompt enforcing JSON output: { department, priorityTier, reasoning, followUpQuestion }. Multi-turn: if Gemini returns a followUpQuestion, relay it to the user. On AI failure: return GREEN priority + General Medicine as safe fallback.</div>
+    </div>
+    <div class="endpoint">
+      <span class="endpoint-method method-post">POST</span><span class="endpoint-path">/api/queue/allocate</span>
+      <div class="endpoint-desc">Accepts { patientId, department, priorityTier } → queries MongoDB for all doctors in department → counts their active WAITING tickets → assigns to doctor with fewest tickets (shortest queue) → generates token (DEPT-NNN) → saves QueueTicket → returns full ticket object with estimated wait time.</div>
+    </div>
+  </div>
+
+  <div class="tok-counter" id="tok-counter">~4,200 tokens in full prompt</div>
+</div>
+
+<div id="prompt-data" style="display:none">You are an expert Solutions Architect and Full-Stack MERN Developer specializing in high-throughput healthcare systems. I am building the "Zero-Wait OPD Kiosk" — a physical touch-screen kiosk deployed in hospital outpatient departments to eliminate paper queues, perform AI-powered triage, and route patients to the correct doctor automatically.
+
+Generate an exhaustive, fully-implemented, production-ready codebase. Every file must be copy-pasteable with zero placeholders, no truncation, and real working logic. Use inline comments to explain architectural decisions.
+
+═══════════════════════════════════════
+TECH STACK (strict — do not substitute)
+═══════════════════════════════════════
+Frontend  : React.js + Tailwind CSS
+             — Large-button, high-contrast kiosk UI (touch-screen friendly)
+             — React Router v6 for page navigation
+             — Axios for API calls
+Backend   : Node.js + Express.js
+Database  : MongoDB via Mongoose
+File Uploads: Multer (disk storage, local /uploads directory)
+AI Core   : Google Gemini API (gemini-1.5-flash)
+             — Strict JSON output mode via response_mime_type: "application/json"
+
+═══════════════════════════════════════════════════
+COMPLETE FILE LIST — generate every file below
+═══════════════════════════════════════════════════
+
+── BACKEND ──────────────────────────────────────────
+
+1. backend/package.json
+   Dependencies: express, mongoose, multer, dotenv, cors, @google/generative-ai, express-validator, fs, path
+   Scripts: "start": "node server.js", "dev": "nodemon server.js"
+
+2. backend/.env (with placeholder values and comments)
+   MONGODB_URI=mongodb://localhost:27017/zerowait
+   GEMINI_API_KEY=your_key_here
+   PORT=5000
+   UPLOAD_DIR=./uploads
+
+3. backend/server.js
+   — Import and connect Mongoose via config/db.js
+   — Mount CORS (allow http://localhost:3000 and http://localhost:5173)
+   — Parse JSON + multipart bodies
+   — Mount routes: /api/triage → triage.routes.js, /api/queue → queue.routes.js
+   — Serve /uploads directory as static for uploaded ID images
+   — Global error handler middleware at bottom
+   — Listen on process.env.PORT
+
+4. backend/config/db.js
+   — Mongoose connection with full connection options
+   — Log "MongoDB connected" on success, exit(1) on error
+
+5. backend/models/Patient.js (Mongoose schema)
+   Fields:
+     name: { type: String, trim: true }
+     dob: { type: Date }
+     gender: { type: String, enum: ['male','female','other','unknown'], default: 'unknown' }
+     uniqueId: { type: String, index: true }   ← Aadhar / Passport / any govt ID
+     insurance: {
+       provider: String,
+       policyId: String,
+       status: { type: String, enum: ['active','inactive','unknown'], default: 'unknown' }
+     }
+     isPartial: { type: Boolean, default: false }  ← true when OCR only partially succeeded
+     rawOcrText: String                             ← store raw Gemini output for audit
+   Timestamps: true
+   Export: mongoose.model('Patient', patientSchema)
+
+6. backend/models/QueueTicket.js (Mongoose schema)
+   Fields:
+     tokenNumber: { type: String, unique: true }      ← e.g. CARDIO-004, ORTHO-012
+     department: { type: String, required: true }
+     status: { type: String, enum: ['WAITING','IN_CONSULTATION','DONE'], default: 'WAITING' }
+     priorityTier: { type: String, enum: ['RED','YELLOW','GREEN'], required: true }
+     patientId: { type: Schema.Types.ObjectId, ref: 'Patient', required: true }
+     assignedDoctor: { type: String }                 ← doctor name string (use ObjectId ref if Doctor model exists)
+     checkInAt: { type: Date, default: Date.now }
+     estimatedWaitMinutes: { type: Number, default: 0 }
+   Timestamps: true
+   Export: mongoose.model('QueueTicket', queueTicketSchema)
+
+7. backend/middleware/upload.js
+   — Multer diskStorage: destination = process.env.UPLOAD_DIR, filename = Date.now() + original extension
+   — fileFilter: accept only image/jpeg, image/png, image/webp
+   — Limit: 5MB
+   — Export: upload.single('idImage')
+
+8. backend/middleware/validate.js
+   — Use express-validator to define and run validation chains
+   — Export: validateSymptomChat (checks messages array is non-empty), validateQueueAllocate (checks patientId, department, priorityTier)
+   — Export: handleValidationErrors middleware (returns 422 with errors array if validation fails)
+
+9. backend/utils/gemini.js
+   — Initialize GoogleGenerativeAI with process.env.GEMINI_API_KEY
+   — Export: getModel() → returns generativeModel instance (gemini-1.5-flash)
+   — Export: callGeminiJSON(prompt, jsonSchema) → calls generateContent with response_mime_type: "application/json", response_schema: jsonSchema → parses and returns the JS object
+   — Export: callGeminiVision(base64Image, mimeType, prompt, jsonSchema) → sends image part + text part with JSON schema constraint → returns parsed JS object
+   — All exports wrapped in try/catch, throw descriptive errors
+
+10. backend/utils/queueAlgorithm.js
+    — Export: async findShortestQueue(department)
+    — Queries QueueTicket collection for all WAITING tickets grouped by assignedDoctor in the given department
+    — Hard-codes a doctor roster per department (or reads from a static config object at top of file) for hackathon
+    — Returns { doctorName, currentQueueLength }  for the doctor with fewest active tickets
+    — Export: generateTokenNumber(department, count) → returns e.g. "CARDIO-007" (zero-padded to 3 digits)
+
+11. backend/controllers/triage.controller.js
+    extractIdController:
+    — Read uploaded file from req.file.path
+    — Convert to base64 using fs.readFileSync + Buffer.toString('base64')
+    — Define Gemini JSON schema for ID extraction:
+        { name: string, dob: string, gender: string, uniqueId: string, address: string, confidence: number }
+    — Call callGeminiVision with the image, the prompt, and the JSON schema
+    — On SUCCESS: save a new Patient document (isPartial: false), return { success: true, patient, extractedData }
+    — On GEMINI FAILURE: catch the error, save a Patient with isPartial: true and whatever partial fields exist (use try for each field individually), return { success: false, isPartial: true, partialData: {...}, error: error.message } with HTTP 206
+    — Delete the temp uploaded file after processing (fs.unlinkSync)
+
+    analyzeSymptomController:
+    — Accept { messages: [{role: 'user'|'model', content: string}] } from req.body
+    — Build Gemini chat history from messages array
+    — System instruction (as first message): "You are a medical triage AI at a hospital kiosk. Based on the patient's described symptoms, determine: 1) the most appropriate hospital department 2) an emergency priority tier 3) a brief reasoning. If you need more information, ask ONE follow-up question. Respond ONLY in valid JSON matching the provided schema."
+    — JSON schema: { department: string, priorityTier: 'RED'|'YELLOW'|'GREEN', reasoning: string, followUpQuestion: string|null, triageComplete: boolean }
+    — On SUCCESS: return the structured Gemini response
+    — On FAILURE: return fallback { department: 'General Medicine', priorityTier: 'GREEN', reasoning: 'AI analysis unavailable — default routing applied.', followUpQuestion: null, triageComplete: true, isFallback: true }
+
+12. backend/controllers/queue.controller.js
+    allocateQueueController:
+    — Accept { patientId, department, priorityTier } from req.body (already validated)
+    — Call findShortestQueue(department) to get { doctorName, currentQueueLength }
+    — Count total tickets in this department today (for token number)
+    — Call generateTokenNumber(department, totalCount + 1) to get token string
+    — Calculate estimatedWaitMinutes = currentQueueLength * 12  (12 min per patient, configurable constant)
+    — Create and save new QueueTicket document
+    — Return { success: true, ticket: savedTicket, estimatedWaitMinutes, doctorName, queuePosition: currentQueueLength + 1 }
+    — On FAILURE: return 500 with { success: false, error: error.message }
+
+13. backend/routes/triage.routes.js
+    — POST /extract-id → upload middleware → extractIdController
+    — POST /analyze-symptoms → validateSymptomChat → handleValidationErrors → analyzeSymptomController
+
+14. backend/routes/queue.routes.js
+    — POST /allocate → validateQueueAllocate → handleValidationErrors → allocateQueueController
+
+── FRONTEND ─────────────────────────────────────────
+
+15. frontend/package.json
+    Dependencies: react, react-dom, react-router-dom, axios, tailwindcss, autoprefixer, postcss
+    Scripts: dev, build, preview
+
+16. frontend/tailwind.config.js
+    — content: ['./src/**/*.{js,jsx}']
+    — extend theme with custom kiosk colors: kioskBlue (#1A73E8), kioskRed (#D32F2F), kioskGreen (#388E3C), kioskAmber (#F57C00)
+    — fontFamily: kiosk: ['Inter', 'sans-serif']
+
+17. frontend/src/api/client.js
+    — Axios instance with baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000'
+    — Default Content-Type header
+    — Export named functions:
+        extractPatientId(formData)   ← POST /api/triage/extract-id with multipart
+        analyzeSymptoms(messages)    ← POST /api/triage/analyze-symptoms
+        allocateQueue(payload)       ← POST /api/queue/allocate
+
+18. frontend/src/App.jsx
+    — React Router v6 BrowserRouter + Routes
+    — Routes: "/" → WelcomePage, "/scan" → IDScanPage, "/symptoms" → SymptomChatPage, "/ticket" → TicketPage
+    — Global state via React Context (PatientContext): stores { patientData, triageResult, queueTicket } and their setters
+    — Wrap all routes in PatientContext.Provider
+    — Kiosk-global CSS: full viewport height, Inter font, overflow hidden, bg-slate-50
+
+19. frontend/src/pages/WelcomePage.jsx
+    — Large hero: "Welcome to Zero-Wait OPD"
+    — Two large touch buttons (min-height: 120px): "I have an ID Card" → /scan, "Enter Details Manually" → /symptoms
+    — Bottom strip: current date/time updated every second
+    — Language selector UI (visual only for hackathon — EN/हिंदी/தமிழ்)
+
+20. frontend/src/pages/IDScanPage.jsx
+    — File input styled as a large drag-and-drop zone (camera icon, "Tap to scan or upload your ID")
+    — On file select: show preview image
+    — "Analyze ID" button → calls extractPatientId(formData)
+    — Loading state: spinner with "Reading your ID card..."
+    — On SUCCESS (isPartial: false): auto-navigate to /symptoms with patientData pre-filled in context
+    — On PARTIAL (HTTP 206 / isPartial: true): show yellow warning banner "Some fields couldn't be read — please verify below", render PatientForm pre-filled with partial data, allow editing, "Continue" saves to context and navigates to /symptoms
+    — On full FAILURE: show red error banner, "Try Again" button
+
+21. frontend/src/pages/SymptomChatPage.jsx
+    — Chat interface: scrollable message list + bottom input bar
+    — First message auto-sent from system: "Hello! I'm your triage assistant. Please describe your main symptom or what brings you to the hospital today."
+    — User types/speaks symptom → call analyzeSymptoms(messages)
+    — While AI is thinking: show animated typing indicator (3 dots)
+    — If response.followUpQuestion is not null: display it as next AI message, wait for user reply, re-call analyzeSymptoms with updated history
+    — If response.triageComplete is true: show triage summary card (department + priority tier badge) and "Confirm & Get Queue Ticket" button → calls allocateQueue → navigates to /ticket
+    — Display isFallback warning if applicable
+
+22. frontend/src/pages/TicketPage.jsx
+    — Large token number display (e.g. "CARDIO-004") centered, font-size 96px bold
+    — Priority badge: RED = red pulsing badge "URGENT — You will be seen shortly", YELLOW = amber badge "MODERATE — Please wait", GREEN = green badge "ROUTINE — Please take a seat"
+    — Department, assigned doctor name, estimated wait time
+    — "Print / SMS Ticket" button (alert for hackathon)
+    — "Start New Check-in" button → clears context, navigates to /
+    — Auto-refresh estimated wait by polling GET /api/queue/status/:ticketId every 30 seconds (implement the polling hook even if the GET route is a stub)
+
+23. frontend/src/components/KioskButton.jsx
+    — Reusable large button: props: label, icon (optional), onClick, variant ('primary'|'secondary'|'danger'), disabled, loading
+    — min-height: 80px, text-2xl, rounded-2xl, w-full
+    — Loading state shows spinner inside button
+
+24. frontend/src/components/PatientForm.jsx
+    — Controlled form: name, dob, gender (radio buttons), uniqueId, insurance.provider, insurance.policyId, insurance.status
+    — All fields have large labels and inputs (text-xl, py-4) for touch
+    — Props: initialValues (partial patient data), onSubmit
+
+25. frontend/src/components/ChatBubble.jsx
+    — Props: role ('user'|'model'), content
+    — User: right-aligned, blue bubble
+    — Model: left-aligned, white bubble with subtle border
+    — Avatar initials for model ("AI"), user icon for patient
+
+26. frontend/src/components/PriorityBadge.jsx
+    — Props: tier ('RED'|'YELLOW'|'GREEN')
+    — RED: red background, white text, pulse animation, "URGENT"
+    — YELLOW: amber, dark text, "MODERATE"
+    — GREEN: green, white text, "ROUTINE"
+    — Large pill shape suitable for kiosk display
+
+27. frontend/src/hooks/useSymptomChat.js
+    — Custom hook: manages messages state array, loading boolean, triageResult state
+    — sendMessage(userText): appends user message, calls analyzeSymptoms, appends AI response
+    — Returns { messages, sendMessage, loading, triageResult, resetChat }
+
+═══════════════════════════════════════════
+HACKATHON RELIABILITY REQUIREMENTS
+═══════════════════════════════════════════
+
+FAIL-SAFE 1 — Gemini OCR partial failure:
+  If callGeminiVision throws, the extractIdController must:
+  — Attempt to parse whatever partial text was returned (if any)
+  — Save Patient with isPartial: true
+  — Return HTTP 206 with partialData
+  — Frontend renders editable PatientForm pre-filled with partialData
+
+FAIL-SAFE 2 — Gemini symptom analysis failure:
+  Return hardcoded fallback object:
+  { department: 'General Medicine', priorityTier: 'GREEN', reasoning: 'AI analysis unavailable', followUpQuestion: null, triageComplete: true, isFallback: true }
+
+FAIL-SAFE 3 — Queue allocation failure:
+  If no doctors found for department: default to "Dr. On-Call" with queue length 0
+
+FAIL-SAFE 4 — MongoDB save failure:
+  Wrap all .save() calls in try/catch. On failure: log error + return 500 with { success: false, error: 'Database error — please retry' }
+
+DATA VALIDATION LAYER:
+  — All incoming request bodies pass through express-validator before hitting controllers
+  — Mongoose schemas use required, enum, and trim validators
+  — Never pass raw unvalidated req.body directly into new Model()
+  — Always destructure only the expected fields
+
+═══════════════════════════════════════════
+OUTPUT FORMAT
+═══════════════════════════════════════════
+
+Generate every file in order. For each file:
+1. Print the full relative path as a comment header: // ── FILE: backend/models/Patient.js ──
+2. Print the complete file contents with no truncation
+3. Add inline comments explaining non-obvious architectural decisions
+4. Separate each file with a blank line
+
+Do not generate placeholder functions. Every function must have real working logic. The codebase must run with npm install && node server.js (backend) and npm install && npm run dev (frontend) without modification beyond filling in real API keys in .env.</div>
+
+<script>
+function copyPrompt(){
+  const text = document.getElementById('prompt-data').textContent.trim();
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = document.getElementById('copy-btn');
+    const lbl = document.getElementById('copy-label');
+    lbl.textContent = 'Copied!';
+    btn.style.borderColor = '#5DCAA5';
+    btn.style.color = '#0F6E56';
+    setTimeout(()=>{
+      lbl.textContent = 'Copy full prompt';
+      btn.style.borderColor = '';
+      btn.style.color = '';
+    }, 2500);
+  });
+}
+</script>

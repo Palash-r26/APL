@@ -1,59 +1,170 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════
+   Zero-Wait OPD Kiosk — Design System
+   Premium medical kiosk with gradients,
+   glassmorphism, and touch-friendly sizing
+   ═══════════════════════════════════════ */
+
 @theme {
-  --font-heading: "Outfit", "Inter", system-ui, -apple-system, sans-serif;
-  --font-body: "Inter", system-ui, -apple-system, sans-serif;
-  
-  --color-brand-bg: #060913;
-  --color-brand-card: rgba(15, 22, 42, 0.65);
-  --color-brand-console: rgba(5, 8, 16, 0.85);
-  --color-brand-primary: hsl(262, 83%, 65%);
-  --color-brand-secondary: hsl(174, 80%, 45%);
-  --color-brand-danger: hsl(340, 85%, 60%);
-  --color-brand-muted: #9ca3af;
-  --color-brand-dim: #6b7280;
+  /* Typography */
+  --font-heading: "Outfit", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  /* Core medical palette */
+  --color-kiosk-blue: #1A73E8;
+  --color-kiosk-blue-dark: #1557B0;
+  --color-kiosk-blue-light: #E8F0FE;
+  --color-kiosk-red: #D32F2F;
+  --color-kiosk-red-light: #FDECEA;
+  --color-kiosk-green: #388E3C;
+  --color-kiosk-green-light: #E8F5E9;
+  --color-kiosk-amber: #F57C00;
+  --color-kiosk-amber-light: #FFF3E0;
+
+  /* Backgrounds */
+  --color-bg-primary: #F1F5F9;
+  --color-bg-card: #FFFFFF;
+  --color-bg-overlay: rgba(255, 255, 255, 0.85);
+
+  /* Text */
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94A3B8;
+
+  /* Borders */
+  --color-border-light: #E2E8F0;
+  --color-border-medium: #CBD5E1;
 }
 
-/* Custom Utilities for Premium Glassmorphism */
+/* ── Utility Classes ── */
 @utility glass-card {
-  background: rgba(15, 22, 42, 0.65);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.04);
 }
 
-/* Base Body Styles */
+@utility kiosk-shadow {
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    0 10px 40px rgba(0, 0, 0, 0.06);
+}
+
+@utility kiosk-glow-blue {
+  box-shadow:
+    0 0 0 1px rgba(26, 115, 232, 0.3),
+    0 4px 20px rgba(26, 115, 232, 0.15);
+}
+
+@utility kiosk-glow-red {
+  box-shadow:
+    0 0 0 1px rgba(211, 47, 47, 0.3),
+    0 4px 20px rgba(211, 47, 47, 0.15);
+}
+
+@utility kiosk-glow-green {
+  box-shadow:
+    0 0 0 1px rgba(56, 142, 60, 0.3),
+    0 4px 20px rgba(56, 142, 60, 0.15);
+}
+
+/* ── Base Styles ── */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
 body {
-  background-color: #060913;
-  color: #f3f4f6;
+  background: linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 50%, #F1F5F9 100%);
+  color: #0F172A;
   font-family: "Inter", system-ui, sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Ambient glow spots */
-.glow-spot {
-  position: absolute;
-  width: 45vw;
-  height: 45vw;
-  border-radius: 50%;
-  filter: blur(140px);
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.18;
+/* ── Touch-friendly Focus States ── */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #1A73E8;
+  outline-offset: 2px;
 }
 
-/* Custom scrollbar */
+/* ── Scrollbar ── */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #060913;
+  background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: #CBD5E1;
   border-radius: 9999px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #94A3B8;
+}
+
+/* ── Priority Pulse Animation ── */
+@keyframes priority-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.03);
+  }
+}
+
+.priority-pulse {
+  animation: priority-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ── Typing Indicator ── */
+@keyframes typing-dot {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-8px);
+    opacity: 1;
+  }
+}
+
+.typing-dot:nth-child(1) { animation: typing-dot 1.4s 0s infinite; }
+.typing-dot:nth-child(2) { animation: typing-dot 1.4s 0.2s infinite; }
+.typing-dot:nth-child(3) { animation: typing-dot 1.4s 0.4s infinite; }
+
+/* ── Gradient Mesh Background (Welcome page) ── */
+.gradient-mesh {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(26, 115, 232, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(56, 142, 60, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(245, 124, 0, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Token Display ── */
+.token-display {
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: clamp(48px, 10vw, 96px);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  line-height: 1;
 }
