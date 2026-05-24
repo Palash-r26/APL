@@ -11,6 +11,7 @@ require('dotenv').config();
 const connectDB = require('./config/db');
 const triageRoutes = require('./routes/triage.routes');
 const queueRoutes = require('./routes/queue.routes');
+const realtimeRoutes = require('./routes/realtime.routes');
 
 const app = express();
 const httpServer = createServer(app);
@@ -89,6 +90,7 @@ app.use('/api/triage', triageRoutes);
 
 // Queue routes: ticket allocation + insurance alert agent
 app.use('/api/queue', queueRoutes);
+app.use('/api/realtime', realtimeRoutes);
 
 // ═══════════════════════════════════════
 // GLOBAL ERROR HANDLER
@@ -134,6 +136,7 @@ const startServer = async () => {
     console.log(`  💊 Health:    http://localhost:${PORT}/api/health`);
     console.log(`  🗄️  Database:  ${dbConnected ? 'MongoDB Connected ✅' : 'Not connected ⚠️ (using fallbacks)'}`);
     console.log(`  🤖 Gemini AI: ${process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'your_key_here' ? 'Configured ✅' : 'Not configured ⚠️ (using fallbacks)'}`);
+    console.log(`  🎙️  OpenAI Realtime: ${process.env.OPENAI_API_KEY ? 'Configured ✅' : 'Not configured ⚠️'}`);
     console.log(`  🔌 Socket.io: Real-time alerts enabled ✅`);
     console.log('════════════════════════════════════════════');
     console.log('');

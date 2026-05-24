@@ -2,12 +2,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Send, Stethoscope, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Send, Stethoscope, AlertTriangle, Mic, MicOff, PhoneOff } from 'lucide-react';
 import ChatBubble, { TypingIndicator } from '../components/ChatBubble';
 import PriorityBadge from '../components/PriorityBadge';
 import KioskButton from '../components/KioskButton';
+import VoiceVisualizer from '../components/VoiceVisualizer';
 import { usePatient } from '../context/PatientContext';
 import { useSymptomChat } from '../hooks/useSymptomChat';
+import { useRealtimeVoice } from '../hooks/useRealtimeVoice';
 import { allocateQueue } from '../api/client';
 
 export default function SymptomChatPage() {
@@ -17,7 +19,23 @@ export default function SymptomChatPage() {
 
   const [inputValue, setInputValue] = useState('');
   const [allocating, setAllocating] = useState(false);
+  const [isVoiceMode, setIsVoiceMode] = useState(false);
   const messagesEndRef = useRef(null);
+
+  const { voiceState, errorMsg, startSession, stopSession } = useRealtimeVoice((result) => {
+    // If voice agent completes triage, it calls this
+    setTriageResult(result);
+  });
+
+  const toggleVoiceMode = () => {
+    if (isVoiceMode) {
+      stopSession();
+      setIsVoiceMode(false);
+    } else {
+      setIsVoiceMode(true);
+      startSession();
+    }
+  };
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -115,14 +133,49 @@ export default function SymptomChatPage() {
             {patientData.name}
           </div>
         )}
+        <button
+          onClick={toggleVoiceMode}
+          className={`ml-3 p-3 rounded-xl border transition-all flex items-center gap-2 ${
+            isVoiceMode 
+              ? 'bg-red-500 border-red-600 text-white shadow-[0_0_15px_rgba(239,68,68,0.5)]' 
+              : 'bg-white border-border-light text-text-secondary hover:bg-bg-primary'
+          }`}
+        >
+          {isVoiceMode ? (
+            <>
+              <PhoneOff className="w-5 h-5" />
+              <span className="text-sm font-bold">End Voice Call</span>
+            </>
+          ) : (
+            <>
+              <Mic className="w-5 h-5" />
+              <span className="text-sm font-bold text-kiosk-blue">Voice Agent</span>
+            </>
+          )}
+        </button>
       </header>
 
       {/* Chat Messages Area */}
-      <main className="flex-1 overflow-y-auto px-8 py-6">
+      <main className="flex-1 overflow-y-auto px-8 py-6 relative">
         <div className="max-w-2xl mx-auto space-y-5">
-          {messages.map((msg, idx) => (
-            <ChatBubble key={idx} role={msg.role} content={msg.content} />
-          ))}
+          {isVoiceMode && !triageResult ? (
+             <div className="flex flex-col items-center justify-center min-h-[400px]">
+               <h2 className="text-2xl font-heading font-bold text-text-primary mb-4">Live Audio Triage</h2>
+               <p className="text-text-muted mb-8 text-center max-w-md">
+                 Speak naturally. Our AI agent is listening and will assess your symptoms in real-time.
+               </p>
+               <VoiceVisualizer state={voiceState} />
+               {errorMsg && <p className="text-red-500 mt-4 font-medium">{errorMsg}</p>}
+               <p className="mt-8 text-sm text-text-muted capitalize font-bold">
+                 Status: <span className={voiceState === 'connecting' ? 'text-amber-500' : 'text-kiosk-blue'}>{voiceState}</span>
+               </p>
+             </div>
+          ) : (
+            <>
+              {messages.map((msg, idx) => (
+                <ChatBubble key={idx} role={msg.role} content={msg.content} />
+              ))}
+
 
           {/* Typing indicator */}
           {loading && <TypingIndicator />}
@@ -182,13 +235,15 @@ export default function SymptomChatPage() {
               </motion.div>
             )}
           </AnimatePresence>
+            </>
+          )}
 
           <div ref={messagesEndRef} />
         </div>
       </main>
 
       {/* Bottom Input Bar */}
-      {!triageResult && (
+      {!triageResult && !isVoiceMode && (
         <div className="flex-shrink-0 border-t border-border-light bg-white/80 backdrop-blur-sm px-8 py-5">
           <div className="max-w-2xl mx-auto flex gap-3">
             <input
