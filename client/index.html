@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APL Smart Dashboard</title>
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Ambient background glow spots -->
+  <div class="glow-spot glow-1"></div>
+  <div class="glow-spot glow-2"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="logo-container">
+          <span class="logo-symbol">A</span>
+        </div>
+        <div>
+          <h1 class="logo-text">APL <span class="logo-accent">Hub</span></h1>
+          <p class="tagline">Developer Environment Control Center</p>
+        </div>
+      </div>
+      
+      <!-- Connection Status indicator -->
+      <div class="status-badge" id="server-status-badge">
+        <span class="pulse-dot idle" id="status-dot"></span>
+        <span class="status-text" id="status-text">Connecting to server...</span>
+      </div>
+    </header>
+
+    <!-- Dashboard Grid -->
+    <div class="dashboard-grid">
+      
+      <!-- Server Health Monitoring Widget -->
+      <section class="card stats-card" id="health-widget">
+        <div class="card-header">
+          <h2 class="card-title">Server Metrics</h2>
+          <button class="btn btn-secondary btn-icon" id="refresh-health-btn" title="Refresh metrics">
+            <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8.89M9 11l3 3L22 4" />
+            </svg>
+          </button>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric-box">
+            <span class="metric-label">Status</span>
+            <span class="metric-value status-ok" id="metric-status">Offline</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">Uptime</span>
+            <span class="metric-value" id="metric-uptime">0.00s</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">API Ping</span>
+            <span class="metric-value" id="metric-ping">-- ms</span>
+          </div>
+        </div>
+        <div class="server-console">
+          <div class="console-header">Console Output</div>
+          <div class="console-body" id="console-logs">
+            <div class="log-line system">[system] Ready. Initializing API handshake...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Task Manager / Integration Demonstration Widget -->
+      <section class="card tasks-card" id="task-widget">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Project Roadmap</h2>
+            <p class="card-subtitle">Stateful CRUD operation demo with live backend sync</p>
+          </div>
+          <span class="badge" id="task-count-badge">0 tasks</span>
+        </div>
+
+        <!-- Add Task Form -->
+        <form class="add-task-form" id="add-task-form">
+          <input type="text" id="new-task-input" placeholder="Plan next milestone..." required autocomplete="off">
+          <button type="submit" class="btn btn-primary" id="add-task-btn">
+            <span>Add Item</span>
+            <svg class="icon btn-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+        </form>
+
+        <!-- Tasks List -->
+        <div class="task-list-container">
+          <ul class="task-list" id="task-list">
+            <!-- Dynamically populated -->
+            <li class="task-item skeleton">
+              <div class="skeleton-checkbox"></div>
+              <div class="skeleton-text"></div>
+            </li>
+            <li class="task-item skeleton">
+              <div class="skeleton-checkbox"></div>
+              <div class="skeleton-text"></div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>&copy; 2026 APL Ecosystem. Powered by Premium Glassmorphism UI & Express API.</p>
+    </footer>
+  </div>
+
+  <!-- JavaScript logic -->
+  <script src="app.js"></script>
+</body>
+</html>
