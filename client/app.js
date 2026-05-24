@@ -59,8 +59,14 @@ async function checkServerHealth() {
     const ping = Date.now() - startTime;
     
     setServerStatus(true);
-    metricStatus.textContent = 'ONLINE';
-    metricStatus.className = 'metric-value status-ok';
+    if (data.status === 'warning') {
+      metricStatus.textContent = 'WARN/MEMORY';
+      metricStatus.style.color = 'hsl(45, 93%, 47%)'; // warning amber HSL
+    } else {
+      metricStatus.textContent = 'ONLINE';
+      metricStatus.className = 'metric-value status-ok';
+      metricStatus.style.color = '';
+    }
     metricPing.textContent = `${ping} ms`;
     
     // Set up local uptime counter based on server uptime
@@ -73,7 +79,11 @@ async function checkServerHealth() {
       metricUptime.textContent = formatUptime(currentUptime);
     }, 1000);
 
-    logToConsole(`Ping success. Server healthy. (Ping: ${ping}ms)`, 'success');
+    if (data.status === 'warning') {
+      logToConsole(`Backend Active in Fallback Mode. DB Warning: ${data.warning}`, 'error');
+    } else {
+      logToConsole(`Backend Active. Connected to Atlas MongoDB (Ping: ${ping}ms).`, 'success');
+    }
     
     // If we just got online, load items
     if (!isServerOnline) {
